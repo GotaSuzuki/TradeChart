@@ -30,4 +30,4 @@ jobs:
           LINE_TARGET_USER_ID: ${{ secrets.LINE_TARGET_USER_ID }}
           RSI_ALERT_THRESHOLD: ${{ secrets.RSI_ALERT_THRESHOLD }}
         run: |
-          python scripts/rsi_alert.py NVDA AAPL
+          python scripts/rsi_alert.py

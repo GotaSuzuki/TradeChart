@@ -12,6 +12,8 @@ from app.config import get_config
 from app.market_data import compute_rsi, download_price_history
 from app.notifier import LineMessagingNotifier
 
+DEFAULT_TICKERS = ["NVDA", "AVGO", "NBIS", "MU", "GOOG"]
+
 
 def check_ticker(ticker: str, threshold: float, notifier: LineNotifier) -> None:
     price_df = download_price_history(ticker)
@@ -41,9 +43,10 @@ def check_ticker(ticker: str, threshold: float, notifier: LineNotifier) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="RSI monitor with LINE notifications")
-    parser.add_argument("tickers", nargs="+", help="監視するティッカー (例: NVDA AAPL)")
+    parser.add_argument("tickers", nargs="*", help="監視するティッカー (例: NVDA AAPL)")
     args = parser.parse_args()
-    run_alerts(args.tickers)
+    tickers = args.tickers or DEFAULT_TICKERS
+    run_alerts(tickers)
 
 
 def run_alerts(tickers):
