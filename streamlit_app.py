@@ -471,7 +471,7 @@ def render_alerts_page() -> None:
         return
 
     df = pd.DataFrame(alerts)
-    df = df.drop(columns=["id"], errors="ignore")
+    df = df.drop(columns=["id", "note"], errors="ignore")
     current_data = []
     for ticker in df["ticker"].unique():
         price_df = _get_price_history(ticker)
@@ -494,16 +494,22 @@ def render_alerts_page() -> None:
 
     latest_df = pd.DataFrame(current_data)
     df = df.merge(latest_df, on="ticker", how="left")
+    df["alert_price"] = _estimate_price_for_rsi_series(
+        df["current_price"], df["current_rsi"], df["threshold"]
+    )
     column_map = {
         "ticker": "ティッカー",
         "type": "タイプ",
-        "threshold": "RSI閾値",
-        "note": "メモ",
+        "threshold": "アラートRSI",
         "current_price": "現在株価",
         "current_rsi": "現在RSI",
+        "alert_price": "目標株価",
     }
     df = df.rename(columns=column_map)
-    st.dataframe(df, use_container_width=True)
+    df["現在株価"] = df["現在株価"].map(lambda x: f"{x:,.2f}" if pd.notna(x) else "-")
+    df["現在RSI"] = df["現在RSI"].map(lambda x: f"{x:.1f}" if pd.notna(x) else "-")
+    df["目標株価"] = df["目標株価"].map(lambda x: f"{x:,.2f}" if pd.notna(x) else "-")
+    st.dataframe(df, use_container_width=True, hide_index=True)
 
     options = {
         f"{a['ticker']} - {a['type']} <= {a['threshold']}": a["id"]
@@ -517,6 +523,10 @@ def render_alerts_page() -> None:
 
 def _append_rsi(price_df: pd.DataFrame) -> pd.DataFrame:
     return compute_price_rsi(price_df)
+
+
+def _estimate_price_for_rsi_series(current_price, current_rsi, target_rsi):
+    return current_price * (target_rsi / current_rsi)
 
 
 @st.cache_data(show_spinner=False)
