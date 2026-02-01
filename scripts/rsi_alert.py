@@ -43,7 +43,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="RSI monitor with LINE notifications")
     parser.add_argument("tickers", nargs="+", help="監視するティッカー (例: NVDA AAPL)")
     args = parser.parse_args()
+    run_alerts(args.tickers)
 
+
+def run_alerts(tickers):
     config = get_config()
     if not config.line_channel_access_token or not config.line_target_user_id:
         print(
@@ -56,7 +59,7 @@ def main() -> None:
         config.line_channel_access_token,
         config.line_target_user_id,
     )
-    for ticker in args.tickers:
+    for ticker in tickers:
         check_ticker(ticker.upper(), config.rsi_alert_threshold, notifier)
 
 

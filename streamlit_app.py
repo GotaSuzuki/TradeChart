@@ -94,6 +94,10 @@ def main() -> None:
         st.session_state["financial_df"] = df
         st.session_state["cagr_map"] = cagr_map
         st.session_state["selected_ticker"] = ticker
+        history = st.session_state.get("ticker_history", [])
+        if ticker not in history:
+            history.append(ticker)
+            st.session_state["ticker_history"] = history[-10:]
 
     stored_df = st.session_state.get("financial_df")
     stored_cagr = st.session_state.get("cagr_map")
@@ -103,6 +107,7 @@ def main() -> None:
         st.info("左のフォームでティッカーを取得するとビューが表示されます。")
         return
 
+    history = st.session_state.get("ticker_history", [])
     if view == "ファンダメンタル":
         render_metric_panels(stored_df, stored_cagr)
         render_alert_form(stored_ticker, config, location="fundamental")
