@@ -8,6 +8,7 @@ from datetime import datetime
 
 import pandas as pd
 
+from app.alerts import load_alerts
 from app.config import get_config
 from app.market_data import compute_rsi, download_price_history
 from app.notifier import LineMessagingNotifier
@@ -50,6 +51,17 @@ def main() -> None:
 
 
 def run_alerts(tickers):
+    alerts = load_alerts()
+    alert_map = {}
+    if alerts:
+        for alert in alerts:
+            ticker = (alert.get("ticker") or "").upper()
+            threshold = alert.get("threshold")
+            if ticker:
+                alert_map[ticker] = threshold
+        alert_tickers = set(alert_map.keys())
+        tickers = sorted(set(tickers) | alert_tickers)
+
     config = get_config()
     if not config.line_channel_access_token or not config.line_target_user_id:
         print(
@@ -63,7 +75,8 @@ def run_alerts(tickers):
         config.line_target_user_id,
     )
     for ticker in tickers:
-        check_ticker(ticker.upper(), config.rsi_alert_threshold, notifier)
+        threshold = alert_map.get(ticker.upper(), config.rsi_alert_threshold)
+        check_ticker(ticker.upper(), float(threshold), notifier)
 
 
 if __name__ == "__main__":
