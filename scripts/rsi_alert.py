@@ -8,6 +8,13 @@ from datetime import datetime
 
 import pandas as pd
 
+import os
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
 from app.alerts import load_alerts
 from app.config import get_config
 from app.market_data import compute_rsi, download_price_history
