@@ -72,7 +72,7 @@ def run_alerts(tickers):
     config = get_config()
     if not config.line_channel_access_token or not config.line_target_user_id:
         print(
-            "LINE Messaging APIのトークンまたはユーザーIDが設定されていません (環境変数 CHANNEL_ACCESS_TOKEN, LINE_TARGET_USER_ID を設定してください)",
+            "LINE Messaging APIのトークンまたはユーザーIDが設定されていません (環境変数 LINE_CHANNEL_ACCESS_TOKEN, LINE_TARGET_USER_ID を設定してください)",
             file=sys.stderr,
         )
         sys.exit(1)
