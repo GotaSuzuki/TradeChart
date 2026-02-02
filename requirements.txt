@@ -7,3 +7,4 @@ sec-edgar-downloader
 pyrate-limiter<3.9
 yfinance
 python-dotenv
+supabase

@@ -20,6 +20,8 @@ class AppConfig:
     line_channel_secret: Optional[str] = None
     line_target_user_id: Optional[str] = None
     rsi_alert_threshold: float = 40.0
+    supabase_url: Optional[str] = None
+    supabase_service_role_key: Optional[str] = None
 
     @property
     def user_agent(self) -> str:
@@ -51,6 +53,10 @@ def get_config() -> AppConfig:
         ),
         rsi_alert_threshold=_float_env(
             "RSI_ALERT_THRESHOLD", defaults.rsi_alert_threshold
+        ),
+        supabase_url=os.getenv("SUPABASE_URL", defaults.supabase_url),
+        supabase_service_role_key=_clean_secret(
+            os.getenv("SUPABASE_SERVICE_ROLE_KEY", defaults.supabase_service_role_key)
         ),
     )
 
