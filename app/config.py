@@ -34,13 +34,17 @@ def get_config() -> AppConfig:
         filings_years=_int_env("APP_FILINGS_YEARS", defaults.filings_years),
         cache_ttl_hours=_int_env("APP_CACHE_TTL_HOURS", defaults.cache_ttl_hours),
         download_dir=os.getenv("APP_DOWNLOAD_DIR", defaults.download_dir),
-        line_channel_access_token=_env_first(
-            ["LINE_CHANNEL_ACCESS_TOKEN", "CHANNEL_ACCESS_TOKEN"],
-            defaults.line_channel_access_token,
+        line_channel_access_token=_clean_secret(
+            _env_first(
+                ["LINE_CHANNEL_ACCESS_TOKEN", "CHANNEL_ACCESS_TOKEN"],
+                defaults.line_channel_access_token,
+            )
         ),
-        line_channel_secret=_env_first(
-            ["LINE_CHANNEL_SECRET", "CHANNEL_SECRET"],
-            defaults.line_channel_secret,
+        line_channel_secret=_clean_secret(
+            _env_first(
+                ["LINE_CHANNEL_SECRET", "CHANNEL_SECRET"],
+                defaults.line_channel_secret,
+            )
         ),
         line_target_user_id=os.getenv(
             "LINE_TARGET_USER_ID", defaults.line_target_user_id
@@ -77,3 +81,12 @@ def _env_first(names, default=None):
         if value:
             return value
     return default
+
+
+def _clean_secret(value: Optional[str]) -> Optional[str]:
+    if not value:
+        return None
+    cleaned = value.strip()
+    if cleaned.startswith("***"):
+        return None
+    return cleaned
