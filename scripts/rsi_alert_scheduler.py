@@ -45,8 +45,8 @@ def main() -> None:
     parser.add_argument("tickers", nargs="*", help="監視するティッカー (例: NVDA AAPL)")
     parser.add_argument(
         "--times",
-        default="04:30,07:00",
-        help="JSTでの実行時刻をカンマ区切りで指定 (例: '04:30,07:00')",
+        default="11:40,06:00",
+        help="JSTでの実行時刻をカンマ区切りで指定 (例: '11:40,06:00')",
     )
     args = parser.parse_args()
 

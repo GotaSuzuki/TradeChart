@@ -2,8 +2,8 @@ name: RSI Alert Scheduler
 
 on:
   schedule:
-    - cron: '30 19 * * *' # JST 04:30 (UTC-9)
-    - cron: '0 22 * * *'  # JST 07:00 (UTC-9)
+    - cron: '40 2 * * *'  # JST 11:40 (UTC+9 -> UTC-9)
+    - cron: '0 21 * * *'  # JST 06:00 (UTC-9)
   workflow_dispatch:
 
 jobs:
