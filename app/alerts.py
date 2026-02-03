@@ -24,7 +24,9 @@ def load_alerts() -> List[Dict[str, str]]:
     if client:
         try:
             response = client.table("alerts").select("*").execute()
-            return response.data or []
+            data = response.data or []
+            _save_local_cache(data)
+            return data
         except Exception:
             return []
 
@@ -46,9 +48,7 @@ def save_alerts(alerts: List[Dict[str, str]]) -> None:
         # For Supabase we rely on add/delete operations; save() via file is fallback only
         return
 
-    ALERTS_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with ALERTS_FILE.open("w", encoding="utf-8") as f:
-        json.dump(alerts, f, ensure_ascii=False, indent=2)
+    _save_local_cache(alerts)
 
 
 def add_alert(*, ticker: str, alert_type: str, threshold: float, note: str = "") -> Dict[str, str]:
@@ -93,3 +93,9 @@ def _get_supabase_client() -> Optional[Client]:
             config.supabase_service_role_key,
         )
     return _SUPABASE_CLIENT
+
+
+def _save_local_cache(alerts: List[Dict[str, str]]) -> None:
+    ALERTS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with ALERTS_FILE.open("w", encoding="utf-8") as f:
+        json.dump(alerts, f, ensure_ascii=False, indent=2)
