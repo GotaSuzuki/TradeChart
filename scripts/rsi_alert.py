@@ -66,8 +66,9 @@ def run_alerts(tickers):
             threshold = alert.get("threshold")
             if ticker:
                 alert_map[ticker] = threshold
-        alert_tickers = set(alert_map.keys())
-        tickers = sorted(set(tickers) | alert_tickers)
+        tickers = sorted(alert_map.keys())
+    else:
+        tickers = sorted(set(tickers))
 
     config = get_config()
     if not config.line_channel_access_token or not config.line_target_user_id:
