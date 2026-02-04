@@ -20,10 +20,10 @@ from app.config import get_config
 from app.market_data import compute_rsi, download_price_history
 from app.notifier import LineMessagingNotifier
 
-DEFAULT_TICKERS = ["NVDA", "AVGO", "NBIS", "MU", "GOOG"]
+DEFAULT_TICKERS = ["NVDA", "AVGO", "NBIS", "MU", "GOOG", "SNDK"]
 
 
-def check_ticker(ticker: str, threshold: float, notifier: LineNotifier) -> None:
+def check_ticker(ticker: str, threshold: float, notifier: LineMessagingNotifier) -> None:
     price_df = download_price_history(ticker)
     if price_df.empty:
         print(f"{ticker}: 価格データを取得できませんでした", file=sys.stderr)
