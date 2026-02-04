@@ -20,7 +20,7 @@ from app.config import get_config
 from app.market_data import compute_rsi, download_price_history
 from app.notifier import LineMessagingNotifier
 
-DEFAULT_TICKERS = ["NVDA", "AVGO", "NBIS", "MU", "GOOG", "SNDK"]
+DEFAULT_TICKERS = ["NVDA", "AVGO", "NBIS", "MU", "GOOG", "SNDK", "STX"]
 
 
 def check_ticker(ticker: str, threshold: float, notifier: LineMessagingNotifier) -> None:
