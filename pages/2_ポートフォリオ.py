@@ -128,7 +128,9 @@ with left_col:
             st.stop()
 
         df = pd.DataFrame(_build_rows(holdings, usd_jpy_rate))
-        df.sort_values("ticker", inplace=True)
+        df.sort_values(
+            by=["value_jpy", "ticker"], ascending=[False, True], na_position="last", inplace=True
+        )
 
         st.subheader("保有一覧")
         total_value = df["value_jpy"].sum(min_count=1)
@@ -150,12 +152,19 @@ with left_col:
                 "price_date": "価格日付",
             }
         )
-        display_df = display_df[["銘柄", "保有数", "現在株価", "評価額", "価格日付"]]
+        if pd.notna(total_value) and total_value > 0:
+            display_df["構成比"] = (display_df["評価額"] / total_value) * 100.0
+        else:
+            display_df["構成比"] = pd.NA
+        display_df = display_df[["銘柄", "保有数", "現在株価", "評価額", "構成比", "価格日付"]]
         display_df["現在株価"] = display_df["現在株価"].map(
             lambda x: f"¥{x:,.0f}" if pd.notna(x) else "-"
         )
         display_df["評価額"] = display_df["評価額"].map(
             lambda x: f"¥{x:,.0f}" if pd.notna(x) else "-"
+        )
+        display_df["構成比"] = display_df["構成比"].map(
+            lambda x: f"{x:.2f}%" if pd.notna(x) else "-"
         )
         st.dataframe(
             display_df,
@@ -168,7 +177,11 @@ with left_col:
         )
 
         st.subheader("保有株の削除")
-        options = {f"{h['ticker']} ({h['shares']})": h["id"] for h in holdings}
+        options = {
+            f"{row['ticker']} ({int(row['shares'])})": row["id"]
+            for _, row in df.iterrows()
+            if pd.notna(row.get("id"))
+        }
         selected = st.selectbox("削除する銘柄", list(options.keys()))
         if st.button("選択した銘柄を削除"):
             delete_holding(options[selected])
@@ -191,6 +204,7 @@ with right_col:
             if plot_df.empty or pd.isna(total_value) or total_value <= 0:
                 st.info("価格データが取得できず、構成比を計算できませんでした。")
             else:
+                plot_df = plot_df.sort_values("value_jpy", ascending=False).copy()
                 tickers = plot_df["ticker"].tolist()
                 fig = px.pie(
                     plot_df,
@@ -201,7 +215,13 @@ with right_col:
                     color_discrete_sequence=COLOR_PALETTE,
                     title="ポートフォリオ構成比 (JPY)",
                 )
-                fig.update_traces(textposition="inside", textinfo="percent+label")
+                fig.update_traces(
+                    textposition="inside",
+                    textinfo="percent+label",
+                    sort=False,
+                    direction="clockwise",
+                    rotation=0,
+                )
                 st.plotly_chart(fig, use_container_width=True)
 
     st.caption("データソース: Yahoo Finance (yfinance) / Alpaca")
