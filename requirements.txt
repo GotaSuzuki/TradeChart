@@ -1,10 +1,5 @@
-streamlit
 requests
 pandas
-beautifulsoup4
-plotly
-sec-edgar-downloader
-pyrate-limiter<3.9
+numpy
 yfinance
 python-dotenv
-supabase
